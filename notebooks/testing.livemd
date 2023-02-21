@@ -1,0 +1,45 @@
+# testing
+
+```elixir
+Mix.install([
+  {:kubo_ex, path: "."},
+  {:floki, "~> 0.34.0"}
+])
+
+Code.compile_file("test/support/ipfs_docs.ex")
+```
+
+## Section
+
+```elixir
+commands = IpfsDocs.get_commands()
+```
+
+```elixir
+function_exported?(KuboEx.Rpc, :id, 2)
+```
+
+```elixir
+IpfsDocs.count_implemented(commands)
+```
+
+```elixir
+url = "https://docs.ipfs.tech/reference/kubo/rpc/"
+```
+
+```elixir
+document =
+  url
+  |> HTTPoison.get!()
+  |> Map.get(:body)
+  |> Floki.parse_document!()
+```
+
+```elixir
+document
+|> Floki.find("h2")
+|> Floki.attribute("id")
+|> Enum.filter(&String.starts_with?(&1, "api-v0-"))
+|> Enum.map(&String.replace(&1, "api-v0-", ""))
+|> Enum.map(&String.split(&1, "-"))
+```
