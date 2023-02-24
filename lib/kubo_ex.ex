@@ -1,10 +1,12 @@
 defmodule KuboEx do
+  @moduledoc false
+
   alias Ecto.Changeset
 
   @type config :: %{endpoint: String.t()}
 
-  @spec default_config() :: config
-  def default_config() do
+  @spec default_config :: config
+  def default_config do
     %{endpoint: "http://localhost:5001"}
   end
 

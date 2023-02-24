@@ -1,4 +1,6 @@
 defmodule KuboEx.Rpc do
+  @moduledoc false
+
   alias Ecto.Changeset
   alias KuboEx.RpcError
 
@@ -18,9 +20,8 @@ defmodule KuboEx.Rpc do
   @spec check_status(HTTPoison.Response.t()) ::
           {:ok, String.t()} | {:error, KuboEx.RpcError.t()}
   def check_status(response) do
-    with %HTTPoison.Response{status_code: 200} <- response do
-      {:ok, response.body}
-    else
+    case response do
+      %HTTPoison.Response{status_code: 200} -> {:ok, response.body}
       %HTTPoison.Response{status_code: code} -> {:error, RpcError.rpc(code)}
     end
   end
@@ -33,6 +34,14 @@ defmodule KuboEx.Rpc do
     end
   end
 
+  @spec changeset_apply(Changeset.t()) ::
+          {:ok, map()} | {:error, KuboEx.RpcError.t()}
+  def changeset_apply(changeset) do
+    with {:error, error_changeset} <- Changeset.apply_action(changeset, :update) do
+      {:error, RpcError.changeset(error_changeset)}
+    end
+  end
+
   @spec request(KuboEx.config(), [String.t()], Keyword.t()) ::
           {:ok, map()} | {:error, KuboEx.RpcError.t()}
   def request(config, command, opts \\ []) do
@@ -40,9 +49,8 @@ defmodule KuboEx.Rpc do
     options = [params: opts]
 
     with {:ok, response} <- post(url, options),
-         {:ok, body} <- check_status(response),
-         {:ok, decoded} <- decode(body) do
-      {:ok, decoded}
+         {:ok, body} <- check_status(response) do
+      decode(body)
     end
   end
 
@@ -55,7 +63,7 @@ defmodule KuboEx.Rpc do
   end
 
   @spec call(KuboEx.config(), [String.t()], Keyword.t(), map(), [fun()]) ::
-          map() | {:error, %Ecto.Changeset{}} | {:error, KuboEx.RpcError.t()}
+          map() | {:error, KuboEx.RpcError.t()}
   def call(config, command, opts \\ [], types \\ %{}, changesets \\ []) do
     opts = Enum.into(opts, %{})
 
@@ -68,14 +76,14 @@ defmodule KuboEx.Rpc do
         f.(acc)
       end)
 
-    with {:ok, opts} <- Changeset.apply_action(changeset, :update),
+    with {:ok, opts} <- changeset_apply(changeset),
          {:ok, result} <- request(config, command, Map.to_list(opts)) do
       result
     end
   end
 
   @spec id(KuboEx.config(), Keyword.t()) ::
-          map() | {:error, %Ecto.Changeset{}} | {:error, KuboEx.RpcError.t()}
+          map() | {:error, KuboEx.RpcError.t()}
   def id(config, opts \\ ["peerid-base": "b58mh"]) do
     types = %{
       arg: :string,
@@ -84,14 +92,14 @@ defmodule KuboEx.Rpc do
     }
 
     changesets = [
-      &Changeset.validate_inclusion(&1, :"peerid-base", ["b58mh", "base36", "k", "base32", "b..."])
+      &Changeset.validate_inclusion(&1, :"peerid-base", ["b58mh", "base36", "k", "base32", "b"])
     ]
 
     call(config, split_fname(__ENV__.function), opts, types, changesets)
   end
 
   @spec files_ls(KuboEx.config(), Keyword.t()) ::
-          map() | {:error, %Ecto.Changeset{}} | {:error, KuboEx.RpcError.t()}
+          map() | {:error, KuboEx.RpcError.t()}
   def files_ls(config, opts \\ [arg: "/"]) do
     types = %{
       arg: :string,

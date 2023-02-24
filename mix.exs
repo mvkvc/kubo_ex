@@ -12,13 +12,9 @@ defmodule KuboEx.MixProject do
       version: @version,
       elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
-      deps: deps(),
       docs: docs(),
-      aliases: aliases(),
-      dialyzer: [
-        plt_local_path: "dialyzer",
-        plt_core_path: "dialyzer"
-      ]
+      deps: deps(),
+      aliases: aliases()
     ]
   end
 

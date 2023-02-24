@@ -1,4 +1,6 @@
 defmodule KuboEx.RpcError do
+  @moduledoc false
+
   defexception [:code, :message, :meta]
 
   @type rpc_error_status :: 400 | 403 | 404 | 405 | 500
@@ -11,6 +13,14 @@ defmodule KuboEx.RpcError do
   @spec new(atom(), binary(), map()) :: KuboEx.RpcError.t()
   def new(code, message, meta \\ %{}) when is_binary(message) do
     %__MODULE__{code: code, message: message, meta: Map.new(meta)}
+  end
+
+  @spec changeset(Ecto.Changeset.t()) :: KuboEx.RpcError.t()
+  def changeset(%Ecto.Changeset{action: action, errors: errors}) do
+    new(:changeset, "Changeset error: #{action} - #{inspect(errors)}", %{
+      action: action,
+      errors: errors
+    })
   end
 
   @spec json(binary()) :: KuboEx.RpcError.t()
