@@ -32,6 +32,7 @@ defmodule KuboEx.MixProject do
     [
       extras: [
         {:"README.md", [title: "Overview"]},
+        "docs/compliance.md",
         "LICENSE.md"
       ],
       main: "readme",
@@ -44,8 +45,9 @@ defmodule KuboEx.MixProject do
     [
       {:httpoison, "~> 2.0"},
       {:jason, "~> 1.2"},
-      {:floki, "~> 0.34.0", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:ecto, "~> 3.9"},
+      {:floki, "~> 0.34.0", only: :dev, runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false}
     ]
@@ -53,8 +55,9 @@ defmodule KuboEx.MixProject do
 
   defp aliases do
     [
-      docs: ["docs --formatter html"],
-      badge: ["run priv/ipfs_docs.exs"]
+      docs: ["spec", "docs --formatter html"],
+      # Rewrite this as a mix task (look into it)
+      spec: ["run priv/ipfs_docs.exs"]
     ]
   end
 end

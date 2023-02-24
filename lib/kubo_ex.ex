@@ -1,4 +1,9 @@
 defmodule KuboEx do
+  @moduledoc """
+  KuboEx is a client for the Kubo API.
+  """
+  alias Ecto.Changeset
+
   @type config :: %{endpoint: String.t()}
 
   @spec default_config() :: config
@@ -9,18 +14,23 @@ defmodule KuboEx do
   @spec config!(Keyword.t()) :: config
   def config!(opts \\ []) do
     config = default_config()
+    opts = Enum.into(opts, %{})
 
-    keys_config = Map.keys(config)
-    keys_opts = Keyword.keys(opts)
-    key_diff = keys_opts -- keys_config
+    types = %{
+      endpoint: :string
+    }
 
-    if key_diff != [] do
-      raise ArgumentError, "Invalid option(s) in opts: #{inspect(key_diff)}"
-    else
-      config
-      |> Map.merge(Enum.into(opts, %{}))
+    changeset =
+      {config, types}
+      |> Changeset.cast(opts, Map.keys(types))
+      |> Changeset.validate_required([:endpoint])
+
+    # NOTE: Create a struct to apply the changeset, check elixir school etc
+
+    # Describes the action for observability reasons, errors, etc look into more
+    case Changeset.apply_action(changeset, :update) do
+      {:ok, config} -> config
+      {:error, changeset} -> raise "Invalid config: #{inspect(changeset)}"
     end
-
-    # TODO: Validate types in config conform to type definition
   end
 end

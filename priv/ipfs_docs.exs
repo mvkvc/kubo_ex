@@ -12,6 +12,7 @@ defmodule KuboEx.IpfsDocs do
     |> Enum.filter(&String.starts_with?(&1, "api-v0-"))
     |> Enum.map(&String.replace(&1, "api-v0-", ""))
     |> Enum.map(&String.split(&1, "-"))
+    # Maybe regex
   end
 
   def calc_implemented(commands) do
@@ -24,7 +25,7 @@ defmodule KuboEx.IpfsDocs do
     %{implemented: implemented, not_implemented: atomized -- implemented}
   end
 
-  def puts_implemented do
+  def puts_implemented() do
     %{implemented: implemented, not_implemented: not_implemented} = calc_implemented(get_commands())
 
     num_implemented = length(implemented)
@@ -36,7 +37,7 @@ defmodule KuboEx.IpfsDocs do
     IO.puts("Not implemented: #{Enum.join(not_implemented, ", ")}")
   end
 
-  def update_badge do
+  def update_badge() do
     %{implemented: implemented, not_implemented: not_implemented} = calc_implemented(get_commands())
 
     num_implemented = length(implemented)
@@ -66,5 +67,5 @@ defmodule KuboEx.IpfsDocs do
 end
 
 alias KuboEx.IpfsDocs
-IpfsDocs.puts_implemented
-IpfsDocs.update_badge
+IpfsDocs.puts_implemented()
+IpfsDocs.update_badge()
