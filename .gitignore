@@ -1,7 +1,7 @@
 /.elixir_ls
 /.history
 /dialyzer/*
-!/dialyzer/.plt_sha1
+!/dialyzer/.keep
 
 # The directory Mix will write compiled artifacts to.
 /_build/

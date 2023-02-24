@@ -6,6 +6,10 @@
 
 Elixir library for interacting with a Kubo IPFS node.
 
+## Links
+
+- [Documentation](https://mvkvc.github.io/kubo_ex/)
+
 ## Installation
 
 The package can be installed by adding `kubo_ex` to your list of dependencies in `mix.exs`:

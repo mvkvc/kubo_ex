@@ -6,6 +6,7 @@ on:
     branches:
       - main
     paths:
+      - docs/*
       - lib/**
       - README.md
 
@@ -22,7 +23,7 @@ jobs:
         with:
           otp-version: ${{ env.ERLANG_VERSION }}
           elixir-version: ${{ env.ELIXIR_VERSION }}
-      - uses: mvkvc/actions_mix_deps@v1.0.1-alpha
+      - uses: mvkvc/actions_mix_deps@v1.0.2-alpha
         with:
           erlang-version: ${{ env.ERLANG_VERSION }}
           elixir-version: ${{ env.ELIXIR_VERSION }}

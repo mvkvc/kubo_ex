@@ -30,31 +30,27 @@ jobs:
         with:
           otp-version: ${{ env.ERLANG_VERSION }}
           elixir-version: ${{ env.ELIXIR_VERSION }}
-      - uses: mvkvc/actions_mix_deps@v1.0.1-alpha
+      - uses: mvkvc/actions_mix_deps@v1.0.2-alpha
         with:
           erlang-version: ${{ env.ERLANG_VERSION }}
           elixir-version: ${{ env.ELIXIR_VERSION }}
       - run: mix test
   lint:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v3
       - uses: erlef/setup-beam@v1
         with:
           otp-version: ${{ env.ERLANG_VERSION }}
           elixir-version: ${{ env.ELIXIR_VERSION }}
-      - uses: mvkvc/actions_mix_deps@v1.0.1-alpha
+      - uses: mvkvc/actions_mix_deps@v1.0.2-alpha
         with:
           erlang-version: ${{ env.ERLANG_VERSION }}
           elixir-version: ${{ env.ELIXIR_VERSION }}
-      - uses: mvkvc/actions_mix_dialyzer@v1.0.22-alpha
+      - uses: mvkvc/actions_mix_dialyzer@v1.0.23-alpha
         with:
           erlang-version: ${{ env.ERLANG_VERSION }}
           elixir-version: ${{ env.ELIXIR_VERSION }}
-          path_plt: dialyzer
-          path_hash: dialyzer/.plt_sha1
       - run: mix credo --strict
         if: success() || failure()
   format:
@@ -65,7 +61,7 @@ jobs:
         with:
           otp-version: ${{ env.ERLANG_VERSION }}
           elixir-version: ${{ env.ELIXIR_VERSION }}
-      - uses: mvkvc/actions_mix_deps@v1.0.1-alpha
+      - uses: mvkvc/actions_mix_deps@v1.0.2-alpha
         with:
           erlang-version: ${{ env.ERLANG_VERSION }}
           elixir-version: ${{ env.ELIXIR_VERSION }}
