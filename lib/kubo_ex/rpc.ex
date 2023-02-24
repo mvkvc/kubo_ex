@@ -1,17 +1,19 @@
 defmodule KuboEx.Rpc do
-  @moduledoc false
+  @moduledoc """
+  KuboEx.Rpc is a module for handling RPC requests.
+  """
 
   alias Ecto.Changeset
   alias KuboEx.RpcError
 
   @spec build_url(String.t(), [String.t()]) :: String.t()
-  def build_url(endpoint, command) do
-    Path.join([endpoint, "api/v0", Enum.join(command, "/")])
+  defp build_url(endpoint, command) do
+    Path.join([endpoint, "api/v0/", Enum.join(command, "/")])
   end
 
   @spec post(String.t(), Keyword.t()) ::
           {:ok, HTTPoison.Response.t()} | {:error, KuboEx.RpcError.t()}
-  def post(url, options) do
+  defp post(url, options) do
     with {:error, %HTTPoison.Error{reason: reason}} <- HTTPoison.post(url, "", [], options) do
       {:error, RpcError.http(reason)}
     end
@@ -19,7 +21,7 @@ defmodule KuboEx.Rpc do
 
   @spec check_status(HTTPoison.Response.t()) ::
           {:ok, String.t()} | {:error, KuboEx.RpcError.t()}
-  def check_status(response) do
+  defp check_status(response) do
     case response do
       %HTTPoison.Response{status_code: 200} -> {:ok, response.body}
       %HTTPoison.Response{status_code: code} -> {:error, RpcError.rpc(code)}
@@ -28,7 +30,7 @@ defmodule KuboEx.Rpc do
 
   @spec decode(String.t()) ::
           {:ok, map()} | {:error, KuboEx.RpcError.t()}
-  def decode(response) do
+  defp decode(response) do
     with {:error, _} <- Jason.decode(response) do
       {:error, RpcError.json("could not decode: #{inspect(response)}")}
     end
@@ -36,12 +38,15 @@ defmodule KuboEx.Rpc do
 
   @spec changeset_apply(Changeset.t()) ::
           {:ok, map()} | {:error, KuboEx.RpcError.t()}
-  def changeset_apply(changeset) do
+  defp changeset_apply(changeset) do
     with {:error, error_changeset} <- Changeset.apply_action(changeset, :update) do
       {:error, RpcError.changeset(error_changeset)}
     end
   end
 
+  @doc """
+  Generic RPC request function.
+  """
   @spec request(KuboEx.config(), [String.t()], Keyword.t()) ::
           {:ok, map()} | {:error, KuboEx.RpcError.t()}
   def request(config, command, opts \\ []) do
@@ -55,7 +60,7 @@ defmodule KuboEx.Rpc do
   end
 
   @spec split_fname({atom(), pos_integer()}) :: [String.t()]
-  def split_fname(fname) do
+  defp split_fname(fname) do
     fname
     |> elem(0)
     |> to_string()
@@ -64,7 +69,7 @@ defmodule KuboEx.Rpc do
 
   @spec call(KuboEx.config(), [String.t()], Keyword.t(), map(), [fun()]) ::
           map() | {:error, KuboEx.RpcError.t()}
-  def call(config, command, opts \\ [], types \\ %{}, changesets \\ []) do
+  defp call(config, command, opts \\ [], types \\ %{}, changesets \\ []) do
     opts = Enum.into(opts, %{})
 
     changeset =
@@ -82,6 +87,9 @@ defmodule KuboEx.Rpc do
     end
   end
 
+  @doc """
+  https://docs.ipfs.tech/reference/kubo/rpc/#api-v0-id
+  """
   @spec id(KuboEx.config(), Keyword.t()) ::
           map() | {:error, KuboEx.RpcError.t()}
   def id(config, opts \\ ["peerid-base": "b58mh"]) do
@@ -98,6 +106,9 @@ defmodule KuboEx.Rpc do
     call(config, split_fname(__ENV__.function), opts, types, changesets)
   end
 
+  @doc """
+  https://docs.ipfs.tech/reference/kubo/rpc/#api-v0-files-ls
+  """
   @spec files_ls(KuboEx.config(), Keyword.t()) ::
           map() | {:error, KuboEx.RpcError.t()}
   def files_ls(config, opts \\ [arg: "/"]) do

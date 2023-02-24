@@ -8,7 +8,9 @@ defmodule KuboEx.MixProject do
   def project do
     [
       app: :kubo_ex,
+      name: "KuboEx",
       description: @description,
+      source_url: @source_url,
       version: @version,
       elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
@@ -28,7 +30,7 @@ defmodule KuboEx.MixProject do
     [
       extras: [
         {:"README.md", [title: "Overview"]},
-        "docs/compliance.md",
+        # "docs/compliance.md",
         "LICENSE.md"
       ],
       main: "readme",
